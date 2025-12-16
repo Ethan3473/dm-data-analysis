@@ -10,14 +10,15 @@ def load_json(file_path):
 
     return data
 
-def extract_relevant_info(data):
+
+def extract_processing_info(data, limit = -1):
     """ Extracts relevant information from the data and saves it to a new JSON file. """
 
     processed_data = []
     counter = 0
 
     for entry in data:
-        if counter < 2000:
+        if counter < limit or limit == -1:
             if entry.get("content") != "":
                 processed_data.append({
                     "sender": (entry.get("author")).get("nickname"),
@@ -27,8 +28,4 @@ def extract_relevant_info(data):
                 counter += 1
     
     json.dump(processed_data, open('processed_finn_dms.json', 'w'), indent=4)
-    print("Done!")
-
-data = load_json("finn_dms.json")
-extract_relevant_info(data)
 
