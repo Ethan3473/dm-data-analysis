@@ -29,3 +29,31 @@ def extract_processing_info(data, limit = -1):
     
     json.dump(processed_data, open('processed_finn_dms.json', 'w'), indent=4)
 
+
+def count_words(data):
+    """ Count the total number of times each word is used in the dataset for each user. """
+
+    messages = []
+    
+    for entry in data:
+        messages.append({entry.get("sender"): entry.get("content")})
+    
+    user_word_counts = []
+
+    for message in messages:
+        for sender in message.keys():
+            word_dictionary = {}
+
+            for content in message.items(): # Get sender and content
+                words = content.lower().split() # Split content into list of lower case words
+
+                for word in words: # Calibrate word counts
+                    if word not in word_dictionary:
+                        word_dictionary[word] = 1
+                    else:
+                        word_dictionary[word] += 1
+
+            sender_words = {sender: word_dictionary}
+            user_word_counts.append(sender_words)
+
+    return user_word_counts

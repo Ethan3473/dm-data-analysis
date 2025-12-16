@@ -5,6 +5,10 @@ def main():
     data_processing.extract_processing_info(data, 2000)
     print("Processing complete.")
 
+    word_counts = data_processing.count_words(data)
+    print(word_counts)
+
+    
 if __name__ == "__main__":
     main()
 
