@@ -30,27 +30,34 @@ def count_words(data):
     return user_word_counts
 
 def messages_over_time(data):
-    """ Maps messages sent over time by each user """
+    """ Maps messages sent over time by each user, pandas confuses the hell out of me """
 
     df = pd.DataFrame(data)
-    df["timestamp"] = pd.to_datetime(df["timestamp"], utc = True, format="ISO8601")
+    df["timestamp"] = pd.to_datetime(df["timestamp"], utc = True, format="ISO8601") # Convert weird date formatting to readable times
 
-    counts = (
-        df
-        .set_index("timestamp")
-        .groupby("sender")
-        .resample("M")
-        .size()
-    )
+    counts = df.set_index("timestamp").groupby("sender").resample("M").size() # Makes timestamp the index, splits into a table for each sender, chops time into monthly brackets using new index, count how many rows in each sender month bracket
 
-    counts = counts.reset_index()
-    counts["month"] = counts["timestamp"].dt.strftime("%Y-%m")
-    # continue here
-    
-    counts.plot(kind = "bar")
-    plt.xlabel("Time")
-    plt.ylabel("Messages Sent")
-    plt.title("Messages Over Time by Sender")
+    counts = counts.reset_index() # Reset index to boring 0, 1, ...
+    counts = counts.rename(columns={0: "count"})
+
+    counts["month"] = counts["timestamp"].dt.strftime("%Y-%m") # Create new month column by formatting old timestamp column nicely
+    users = counts["sender"].unique()
+    months = counts["month"].unique() 
+    tick_positions = range(0, len(months), 2)
+
+    fig, axes = plt.subplots(len(users), 1, sharex=True, figsize = (18, 6)) # Creates a figure with the number of subplots that there are users, shares their x ticks, axes = list of subplots 
+
+    for ax, user in zip(axes, users): 
+        user_data = counts[counts["sender"] == user] # Check if counts["sender"] is user. Pandas gets rows that are true
+        ax.bar(user_data["month"], user_data["count"]) # Set x to the months, set y to message count
+        ax.set_title(user)
+        ax.set_ylabel("Messages")
+
+    axes[-1].set_xticks(tick_positions)
+    axes[-1].set_xticklabels(months[::2])
+
+    plt.xticks(rotation=90)
     plt.tight_layout()
     plt.show()
+
     return 

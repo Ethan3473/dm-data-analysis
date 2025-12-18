@@ -4,7 +4,7 @@ import json
 
 def main():
     data = data_processing.load_json("finn_dms.json")
-    processed_data = data_processing.extract_processing_info(data, 2000)
+    processed_data = data_processing.extract_processing_info(data, -1)
     print("Processing complete.")
 
     # word_counts = data_analysis.count_words(processed_data)
