@@ -2,3 +2,4 @@ finn_dms.json
 dms.json
 __pycache__/
 processed_dms.json
+dm_message_counts.json
